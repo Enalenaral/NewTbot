@@ -22,7 +22,7 @@ def start(message):
         cursor.execute("INSERT INTO nickname VALUES(?);", students_list)
         connect.commit()
     else:
-        bot.send_message(message.chat.id, 'Такой уже существует')
+        bot.send_message(message.chat.id, 'Такой пользователь уже существует')
 
 
 @bot.message_handler(commands=['delete'])
