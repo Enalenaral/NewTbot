@@ -8,19 +8,58 @@ bot = telebot.TeleBot(Token)
 
 @bot.message_handler(commands=['start'])
 def start(message):
-    bot.send_message(message.chat.id, 'Привет! Будешь сегодня кушать?', reply_markup=gen_marcup())
+    bot.send_message(message.chat.id, 'Привет! Напиши #')
+    if message.text == '#':
+        bot.send_message(message.from_user.id, "Как тебя зовут?")
+        bot.register_next_step_handler(message, get_name)
+
+
+def get_name(message):
+    global name
+    name = message.text
+    bot.send_message(message.from_user.id, 'Какая у тебя фамилия?')
+    bot.register_next_step_handler(message, get_surname)
+
+
+def get_surname(message):
+    global surname
+    surname = message.text
+    bot.send_message('С какого ты класса?(цифрами пожалуйста)')
+    bot.register_next_step_handler(message, get_grade)
+
+
+def get_grade(message):
+    global grade
+    grade = message.text
+    question = 'Ты с' + str(grade) + ' лет, тебя зовут ' + name + ' ' + surname + '?'
+    bot.send_message(message.from_user.id, text=question, reply_markup=callback_worker)
+
+
+@bot.callback_query_handler(func=lambda call: True)
+def callback_worker(call):
+    if call.data == "yes":
+        bot.send_message(call.message.chat.id, 'Запомню : )', gen_marcup())
+
+
+def gen_marcup(message):
+    bot.send_message(message.chat.id, 'Будешь сегодня кушать?', reply_markup=gen_marcup())
+    marcup = InlineKeyboardMarkup()
+    marcup.row_width = 2
+    marcup.add(InlineKeyboardButton("Да", callback_data="cb_yes"),
+               InlineKeyboardButton("Нет", callback_data="cb_no"))
+    return marcup
+
+
+@bot.callback_query_handler(func=lambda call: True)
+def callback_query(call):
+    if call.data == "cb_yes":
+        bot.answer_callback_query(call.id, "Вот твой QR-код")
+    elif call.data == "cb_no":
+        bot.answer_callback_query(call.id, "Хорошо, до завтра.")
 
 
 def main():
     bot.polling()
-
-
-def gen_marcup():
-    marcup = InlineKeyboardMarkup()
-    marcup.row_width = 2
-    marcup.add(InlineKeyboardButton("Yes", callback_data="cb_yes"),
-               InlineKeyboardButton("No", callback_data="cb_no"))
-    return marcup
 
 
 #
