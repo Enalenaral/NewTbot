@@ -1,17 +1,19 @@
 import telebot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
-from telebot import types
 
 Token = '5209932574:AAFJpNe9bt1fhMma-jwGNP5YSoGJqWjcrh8'
 bot = telebot.TeleBot(Token)
 
+name = "Julia"
+surname = ""
+grade = ""
 
 @bot.message_handler(commands=['start'])
 def start(message):
-    bot.send_message(message.chat.id, 'Привет! Напиши #')
-    if message.text == '#':
-        bot.send_message(message.from_user.id, "Как тебя зовут?")
-        bot.register_next_step_handler(message, get_name)
+    bot.send_message(message.chat.id, 'Привет!')
+    # if message.text == '#':
+    bot.send_message(message.from_user.id, "Как тебя зовут?")
+    bot.register_next_step_handler(message, get_name)
 
 
 def get_name(message):
@@ -22,23 +24,31 @@ def get_name(message):
 
 
 def get_surname(message):
-    global surname
-    surname = message.text
-    bot.send_message('С какого ты класса?(цифрами пожалуйста)')
-    bot.register_next_step_handler(message, get_grade)
+     global surname
+     surname = message.text
+     bot.send_message(message.from_user.id, 'С какого ты класса?(цифрами пожалуйста)')
+     bot.register_next_step_handler(message, get_grade)
 
 
 def get_grade(message):
-    global grade
-    grade = message.text
-    question = 'Ты с' + str(grade) + ' лет, тебя зовут ' + name + ' ' + surname + '?'
-    bot.send_message(message.from_user.id, text=question, reply_markup=callback_worker)
+     global grade
+     grade = message.text
+     question = 'Ты с' + str(grade) + ' класса, тебя зовут ' + name + ' ' + surname + '?'
+     bot.send_message(message.from_user.id, text=question, reply_markup=gen_marcup_for_approve_name())
+
+
+def gen_marcup_for_approve_name():
+    marcup = InlineKeyboardMarkup()
+    marcup.row_width = 2
+    marcup.add(InlineKeyboardButton("Да", callback_data="cb_yes"),
+               InlineKeyboardButton("Нет", callback_data="cb_no"))
+    return marcup
 
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_worker(call):
-    if call.data == "yes":
-        bot.send_message(call.message.chat.id, 'Запомню : )', gen_marcup())
+     if call.data == "cb_yes":
+         bot.send_message(call.message.chat.id, 'Запомню : )', gen_marcup)
 
 
 def gen_marcup(message):
