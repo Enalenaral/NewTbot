@@ -1,10 +1,10 @@
 import telebot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
-
+import qrcode
 Token = '5209932574:AAFJpNe9bt1fhMma-jwGNP5YSoGJqWjcrh8'
 bot = telebot.TeleBot(Token)
 
-name = "Julia"
+name = ""
 surname = ""
 grade = ""
 
@@ -47,16 +47,27 @@ def gen_marcup_for_approve_name():
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_worker(call):
-     if call.data == "cb_yes":
-         bot.send_message(call.message.chat.id, 'Запомню : )', gen_marcup)
+    if call.data == "cb_yes":
+        bot.send_message(call.message.chat.id, 'Запомню : )')
+        bot.send_message(call.message.chat.id, 'Будешь сегодня кушать?', reply_markup=gen_marcup())
+    elif call.data == "yes_will_eat":
+        bot.answer_callback_query(call.id, "Вот твой QR-код")
+        users = surname+" "+name+"/"+grade+"/"+"2022-02-23"+"/"+"2334"
+        img = qrcode.make(users)
+        img.save('qr_code.png')
+        bot.send_photo(call.message.chat.id, open('qr_code.png', 'rb'))
+    elif call.data == "no_wont_eat":
+        bot.answer_callback_query(call.id, "Хорошо, до завтра.")
+
+    bot.answer_callback_query(call.id)
 
 
-def gen_marcup(message):
-    bot.send_message(message.chat.id, 'Будешь сегодня кушать?', reply_markup=gen_marcup())
+def gen_marcup():
+    # bot.send_message(message.chat.id, 'Будешь сегодня кушать?', reply_markup=gen_marcup())
     marcup = InlineKeyboardMarkup()
     marcup.row_width = 2
-    marcup.add(InlineKeyboardButton("Да", callback_data="cb_yes"),
-               InlineKeyboardButton("Нет", callback_data="cb_no"))
+    marcup.add(InlineKeyboardButton("Да", callback_data="yes_will_eat"),
+               InlineKeyboardButton("Нет", callback_data="no_wont_eat"))
     return marcup
 
 
