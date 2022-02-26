@@ -11,7 +11,6 @@ surname = ""
 grade = ""
 day = ""
 
-
 number = random.randrange(1000, 5000)
 
 
@@ -51,23 +50,42 @@ def gen_marcup_for_approve_name():
     return marcup
 
 
-@bot.callback_query_handler(func=lambda call: True)
-def callback_data(call):
-    if call.data == "cb_no":
-        bot.send_message(call.message.chat.id, "Изменить свои данные", reply_markup=gen_marcup_for_change_data())
-
-
-def gen_marcup_for_change_data():
-    marcup = InlineKeyboardMarkup()
-    marcup.row_width = 2
-    marcup.add(InlineKeyboardButton("Да", callback_data="yes_will_change"),
-               InlineKeyboardButton("Нет", callback_data="no_wont_change"))
-    return marcup
-
+#
+# @bot.callback_query_handler(func=lambda call: True)
+# def callback_data(call):
+#     if call.data == "no_wont_approve":
+#         bot.send_message(call.message.chat.id, "Изменить свои данные", reply_markup=gen_marcup_for_change_data())
+#
+#
+# def gen_marcup_for_change_data():
+#     marcup = InlineKeyboardMarkup()
+#     marcup.row_width = 2
+#     marcup.add(InlineKeyboardButton("Нет, все в порядке", callback_data="no_wont_change"),
+#                InlineKeyboardButton("Начать заново", callback_data="back"))
+#     return marcup
+#
+#
+# @bot.callback_query_handler(func=lambda call: True)
+# def callback_data(call):
+#     if call.data == "no_wont_change":
+#         bot.answer_callback_query(call.id, "Хорошо, пойдем дальше")
+#     elif callback_data == "back":
+#         bot.send_message(call.message.chat.id, "Введи свои имя, фамилию и класс заново")
+#         question = 'Ты с ' + str(grade) + ' класса, тебя зовут ' + name + ' ' + surname + '?'
+#         bot.send_message(call.message.from_user.id, text=question, reply_markup=gen_marcup_for_vary_data())
+#
+#
+# def gen_marcup_for_vary_data():
+#     marcup = InlineKeyboardMarkup()
+#     marcup.row_width = 2
+#     marcup.add(InlineKeyboardButton("Да, все в порядке", callback_data="yes_will_vary"),
+#                InlineKeyboardButton("Нет, опять неправильно", callback_data="no_wont_vary"))
+#     return marcup
+#
 
 # def get_number():
-#     number = random.randrange(1000, 5000)
-#     bot
+#     number = random.randrange(1000, 5000)    ДОПИСАТЬ!
+#
 
 def get_day(message):
     global day
@@ -91,7 +109,7 @@ def callback_worker(call):
         bot.send_message(call.message.chat.id, 'Будешь сегодня кушать?', reply_markup=gen_marcup())
     elif call.data == "yes_will_eat":
         bot.answer_callback_query(call.id, "Вот твой QR-код")
-        users = surname + " " + name + "/" + grade + "/" + day + "/" + number
+        users = surname + " " + name + "/" + grade + "/" + day + "/" + "2334"
         img = qrcode.make(users)
         img.save('qr_code.png')
         bot.send_photo(call.message.chat.id, open('qr_code.png', 'rb'))
@@ -121,8 +139,6 @@ def main():
     bot.polling()
 
 
-
-
 # number = random.randrange(1000, 5000))
 
 
@@ -141,7 +157,5 @@ def main():
 #     bot.send_message(message.chat.id, 'Вы написали: ' + message.text)
 #
 main()
-
-
 
 # today = date.today()
