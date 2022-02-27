@@ -2,6 +2,8 @@ import telebot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import qrcode
 import random
+import os
+
 
 Token = '5209932574:AAFJpNe9bt1fhMma-jwGNP5YSoGJqWjcrh8'
 bot = telebot.TeleBot(Token)
@@ -50,38 +52,12 @@ def gen_marcup_for_approve_name():
     return marcup
 
 
-#
-# @bot.callback_query_handler(func=lambda call: True)
-# def callback_data(call):
-#     if call.data == "no_wont_approve":
-#         bot.send_message(call.message.chat.id, "Изменить свои данные", reply_markup=gen_marcup_for_change_data())
-#
-#
-# def gen_marcup_for_change_data():
-#     marcup = InlineKeyboardMarkup()
-#     marcup.row_width = 2
-#     marcup.add(InlineKeyboardButton("Нет, все в порядке", callback_data="no_wont_change"),
-#                InlineKeyboardButton("Начать заново", callback_data="back"))
-#     return marcup
-#
-#
-# @bot.callback_query_handler(func=lambda call: True)
-# def callback_data(call):
-#     if call.data == "no_wont_change":
-#         bot.answer_callback_query(call.id, "Хорошо, пойдем дальше")
-#     elif callback_data == "back":
-#         bot.send_message(call.message.chat.id, "Введи свои имя, фамилию и класс заново")
-#         question = 'Ты с ' + str(grade) + ' класса, тебя зовут ' + name + ' ' + surname + '?'
-#         bot.send_message(call.message.from_user.id, text=question, reply_markup=gen_marcup_for_vary_data())
-#
-#
-# def gen_marcup_for_vary_data():
-#     marcup = InlineKeyboardMarkup()
-#     marcup.row_width = 2
-#     marcup.add(InlineKeyboardButton("Да, все в порядке", callback_data="yes_will_vary"),
-#                InlineKeyboardButton("Нет, опять неправильно", callback_data="no_wont_vary"))
-#     return marcup
-#
+def gen_marcup_for_change_data():
+    marcup = InlineKeyboardMarkup()
+    marcup.row_width = 2
+    marcup.add(InlineKeyboardButton("Начать заново", callback_data="back"),
+               InlineKeyboardButton("Нет, все в порядке", callback_data="no_wont_change"))
+    return marcup
 
 # def get_number():
 #     number = random.randrange(1000, 5000)    ДОПИСАТЬ!
@@ -96,7 +72,9 @@ def get_day(message):
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_worker(call):
-    if call.data == "cb_yes":
+    if call.data == "cb_no":
+        bot.send_message(call.message.chat.id, "Изменить свои данные", reply_markup=gen_marcup_for_change_data())
+    elif call.data == "cb_yes":
         bot.send_message(call.message.chat.id, 'Запомню : )')
         bot.send_message(call.message.chat.id, 'Вот меню на сегодня:'
                                                'Салат из квашенной капусты с маслом растительным;'
@@ -107,7 +85,8 @@ def callback_worker(call):
                                                'Фрукты свежие;'
                                                'Батон или хлеб')
         bot.send_message(call.message.chat.id, 'Будешь сегодня кушать?', reply_markup=gen_marcup())
-    elif call.data == "yes_will_eat":
+
+    if call.data == "yes_will_eat":
         bot.answer_callback_query(call.id, "Вот твой QR-код")
         users = surname + " " + name + "/" + grade + "/" + day + "/" + "2334"
         img = qrcode.make(users)
@@ -115,6 +94,25 @@ def callback_worker(call):
         bot.send_photo(call.message.chat.id, open('qr_code.png', 'rb'))
     elif call.data == "no_wont_eat":
         bot.answer_callback_query(call.id, "Хорошо, до завтра.")
+
+    if call.data == "no_wont_change":
+        bot.answer_callback_query(call.id, "Хорошо, пойдем дальше")
+        bot.send_message(call.message.chat.id, 'Вот меню на сегодня:'
+                                               'Салат из квашенной капусты с маслом растительным;'
+                                               'Суп картофельный с горохом и гренками;'
+                                               'Биточки, рубленные из птицы;'
+                                               'Каша гречневая рассыпчатая;'
+                                               'Сок фруктовый;'
+                                               'Фрукты свежие;'
+                                               'Батон или хлеб')
+        bot.send_message(call.message.chat.id, 'Будешь сегодня кушать?', reply_markup=gen_marcup())
+    elif call.data == "back":
+        bot.send_message(call.message.chat.id, "Введи свои имя, фамилию и класс заново")
+        question = 'Ты с ' + str(grade) + ' класса, тебя зовут ' + name + ' ' + surname + '?'
+        bot.send_message(call.message.chat.id, "Как тебя зовут?")
+        global name
+        name = message.chat.id.text
+        # bot.send_message(call.message.from_user.id, text=question, reply_markup=gen_marcup_for_vary_data())
 
     bot.answer_callback_query(call.id)
 
