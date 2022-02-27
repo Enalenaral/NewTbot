@@ -3,7 +3,7 @@ from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import qrcode
 import random
 import os
-
+import datetime
 
 Token = '5209932574:AAFJpNe9bt1fhMma-jwGNP5YSoGJqWjcrh8'
 bot = telebot.TeleBot(Token)
@@ -63,11 +63,15 @@ def gen_marcup_for_change_data():
 #     number = random.randrange(1000, 5000)    ДОПИСАТЬ!
 #
 
-def get_day(message):
+
+def get_day():
     global day
-    day = message.text
-    bot.send_message(message.from_user.id, "Напиши сегодняшнюю дату(цифрами)")
-    bot.register_next_step_handler(message, callback_worker)
+    now = datetime.datetime.now()
+    year = now.strftime("%Y")
+    month = now.strftime("%m")
+    day = now.strftime("%d")
+    time = now.strftime("%H:%M:%S")
+    day = year+month+day+time
 
 
 @bot.callback_query_handler(func=lambda call: True)
@@ -110,8 +114,9 @@ def callback_worker(call):
         bot.send_message(call.message.chat.id, "Введи свои имя, фамилию и класс заново")
         question = 'Ты с ' + str(grade) + ' класса, тебя зовут ' + name + ' ' + surname + '?'
         bot.send_message(call.message.chat.id, "Как тебя зовут?")
-        global name
-        name = message.chat.id.text
+
+        # global name
+        # name = message.chat.id.text
         # bot.send_message(call.message.from_user.id, text=question, reply_markup=gen_marcup_for_vary_data())
 
     bot.answer_callback_query(call.id)
@@ -134,7 +139,9 @@ def callback_query(call):
 
 
 def main():
+    get_day()
     bot.polling()
+
 
 
 # number = random.randrange(1000, 5000))
