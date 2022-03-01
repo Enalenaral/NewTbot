@@ -1,8 +1,8 @@
 import telebot
+from aiogram.types import message
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import qrcode
 import random
-import os
 import datetime
 
 Token = '5209932574:AAFJpNe9bt1fhMma-jwGNP5YSoGJqWjcrh8'
@@ -13,7 +13,6 @@ surname = ""
 grade = ""
 day = ""
 
-number = random.randrange(1000, 5000)
 
 
 @bot.message_handler(commands=['start'])
@@ -33,7 +32,7 @@ def get_name(message):
 def get_surname(message):
     global surname
     surname = message.text
-    bot.send_message(message.from_user.id, 'С какого ты класса?(цифрами пожалуйста)')
+    bot.send_message(message.from_user.id, 'С какого ты класса?')
     bot.register_next_step_handler(message, get_grade)
 
 
@@ -59,10 +58,6 @@ def gen_marcup_for_change_data():
                InlineKeyboardButton("Нет, все в порядке", callback_data="no_wont_change"))
     return marcup
 
-# def get_number():
-#     number = random.randrange(1000, 5000)    ДОПИСАТЬ!
-#
-
 
 def get_day():
     global day
@@ -71,7 +66,13 @@ def get_day():
     month = now.strftime("%m")
     day = now.strftime("%d")
     time = now.strftime("%H:%M:%S")
-    day = year+month+day+time
+    day = year + month + day + time
+
+
+def get_number():
+    number = random.randint(1000, 5000)
+    x = str(number)
+    return x
 
 
 @bot.callback_query_handler(func=lambda call: True)
@@ -92,7 +93,7 @@ def callback_worker(call):
 
     if call.data == "yes_will_eat":
         bot.answer_callback_query(call.id, "Вот твой QR-код")
-        users = surname + " " + name + "/" + grade + "/" + day + "/" + "2334"
+        users = surname + " " + name + "/" + grade + "/" + day + "/" + get_number()
         img = qrcode.make(users)
         img.save('qr_code.png')
         bot.send_photo(call.message.chat.id, open('qr_code.png', 'rb'))
@@ -111,15 +112,17 @@ def callback_worker(call):
                                                'Батон или хлеб')
         bot.send_message(call.message.chat.id, 'Будешь сегодня кушать?', reply_markup=gen_marcup())
     elif call.data == "back":
-        bot.send_message(call.message.chat.id, "Введи свои имя, фамилию и класс заново")
+        bot.send_message(call.message.chat.id, "Введи данные заново")
         question = 'Ты с ' + str(grade) + ' класса, тебя зовут ' + name + ' ' + surname + '?'
         bot.send_message(call.message.chat.id, "Как тебя зовут?")
-
-        # global name
-        # name = message.chat.id.text
-        # bot.send_message(call.message.from_user.id, text=question, reply_markup=gen_marcup_for_vary_data())
-
-    bot.answer_callback_query(call.id)
+        global figure
+        figure = message.chat.id.text
+        # bot.send_message(call.message.chat.id, "Какая у тебя фамилия?")
+        # global second_name
+        # second_name = message.chat.id.text
+        # bot.send_message(call.message.chat.id, "С какого ты класса?")
+        bot.send_message(call.message.from_user.id, text=question, reply_markup=gen_marcup_for_change_data())
+        bot.answer_callback_query(call.id)
 
 
 def gen_marcup():
@@ -143,7 +146,6 @@ def main():
     bot.polling()
 
 
-
 # number = random.randrange(1000, 5000))
 
 
@@ -162,5 +164,3 @@ def main():
 #     bot.send_message(message.chat.id, 'Вы написали: ' + message.text)
 #
 main()
-
-# today = date.today()
