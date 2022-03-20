@@ -4,7 +4,6 @@ import qrcode
 import random
 import datetime
 
-
 Token = '5209932574:AAFJpNe9bt1fhMma-jwGNP5YSoGJqWjcrh8'
 bot = telebot.TeleBot(Token)
 name = ""
@@ -14,6 +13,7 @@ day = ""
 second_name = ""
 grade_level = ""
 patronymic = ""
+
 
 @bot.message_handler(commands=['start'])
 def start(message):
@@ -32,7 +32,7 @@ def get_name(message):
 def get_surname(message):
     global surname
     surname = message.text
-    bot.send_message(message.from_user.id, 'С какого ты класса?(цифрами пожалуйста)')
+    bot.send_message(message.from_user.id, 'С какого ты класса?')
     bot.register_next_step_handler(message, get_grade)
 
 
@@ -40,7 +40,7 @@ def get_grade(message):
     global grade
     grade = message.text
     question = 'Ты с ' + str(grade) + ' класса, тебя зовут ' + name + ' ' + surname + '?'
-    bot.send_message(message.from_user.id, text=question, reply_markup=gen_marcup_for_approve_name())
+    bot.send_message(message.from_user.id, text=question, reply_markup=gen_marcup_for_approve_name(message))
 
 
 def gen_marcup_for_approve_name(message):
@@ -82,14 +82,16 @@ def callback_worker(call):
         bot.send_message(call.message.chat.id, "Изменить свои данные", reply_markup=gen_marcup_for_change_data())
     elif call.data == "cb_yes":
         bot.send_message(call.message.chat.id, 'Запомню : )')
-        bot.send_message(call.message.chat.id, 'Вот меню на сегодня:'
-                                               'Салат из квашенной капусты с маслом растительным;'
-                                               'Суп картофельный с горохом и гренками;'
-                                               'Биточки, рубленные из птицы;'
-                                               'Каша гречневая рассыпчатая;'
-                                               'Сок фруктовый;'
-                                               'Фрукты свежие;'
-                                               'Батон или хлеб')
+        bot.send_message(call.message.chat.id, 'Вот меню на сегодня:                                      '
+                                               '                                 '                                                                                                                                                                                        
+                                               '○Салат из квашенной капусты с маслом растительным;       '
+                                               '                                                                  '                                                                                                                                                      
+                                               '○Суп картофельный с горохом и гренками;                         '
+                                               '○Биточки, рубленные из птицы;                                          '
+                                               '○Каша гречневая рассыпчатая;                                           '
+                                               '○Сок фруктовый;                                                        '
+                                               '○Фрукты свежие;                                                        '
+                                               '○Батон или хлеб')
         bot.send_message(call.message.chat.id, 'Будешь сегодня кушать?', reply_markup=gen_marcup())
 
     if call.data == "yes_will_eat":
@@ -126,20 +128,6 @@ def callback_worker(call):
                                                'Фрукты свежие;'
                                                'Батон или хлеб')
         bot.send_message(call.message.chat.id, 'Будешь сегодня кушать?', reply_markup=gen_marcup())
-        # bot.send_message(call.message.chat.id, "Введи данные заново")
-        # bot.send_message(call.message.chat.id, "Как тебя зовут?")
-        # question = 'Ты с ' + str(grade) + ' класса, тебя зовут ' + name + ' ' + surname + '?
-        # global name
-        # name = message.chat.id.text
-        # bot.send_message(call.message.from_user.id, text=question, reply_markup=gen_marcup_for_vary_data())
-        # global figure
-        # figure = message.chat.id.text
-        # bot.send_message(call.message.chat.id, "Какая у тебя фамилия?")
-        # global second_name
-        # second_name = message.chat.id.text
-        # bot.send_message(call.message.chat.id, "С какого ты класса?")
-        # bot.send_message(call.message.from_user.id, text=question, reply_markup=gen_marcup_for_change_data())
-        # bot.answer_callback_query(call.id)
 
 
 def get_restart(message):
