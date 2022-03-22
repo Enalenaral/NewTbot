@@ -3,6 +3,7 @@ from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import qrcode
 import random
 import datetime
+import sqlite3
 
 Token = '5209932574:AAFJpNe9bt1fhMma-jwGNP5YSoGJqWjcrh8'
 bot = telebot.TeleBot(Token)
@@ -13,6 +14,15 @@ day = ""
 second_name = ""
 grade_level = ""
 patronymic = ""
+
+connection = sqlite3.connect('progect.db')
+cursor = connection.cursor()
+cursor.execute('''CREATE TABLE IF NOT EXISTS progect 
+              (Surname TEXT, Name TEXT, Class INT, id INT)''')
+cursor.execute("DELETE FROM progect")
+
+
+# print(cursor.execute("SELECT * FROM progect").fetchall())
 
 
 @bot.message_handler(commands=['start'])
@@ -83,9 +93,9 @@ def callback_worker(call):
     elif call.data == "cb_yes":
         bot.send_message(call.message.chat.id, 'Запомню : )')
         bot.send_message(call.message.chat.id, 'Вот меню на сегодня:                                      '
-                                               '                                 '                                                                                                                                                                                        
+                                               '                                 '
                                                '○Салат из квашенной капусты с маслом растительным;       '
-                                               '                                                                  '                                                                                                                                                      
+                                               '                                                                  '
                                                '○Суп картофельный с горохом и гренками;                         '
                                                '○Биточки, рубленные из птицы;                                          '
                                                '○Каша гречневая рассыпчатая;                                           '
@@ -102,17 +112,19 @@ def callback_worker(call):
         img.save('qr_code.png')
         bot.send_photo(call.message.chat.id, open('qr_code.png', 'rb'))
     elif call.data == "no_wont_eat":
-        bot.answer_callback_query(call.id, "Хорошо, до завтра.")
+        bot.answer_callback_query(call.id, "Хорошо, до завтра:)")
     if call.data == "no_wont_change":
         bot.answer_callback_query(call.id, "Хорошо, пойдем дальше")
-        bot.send_message(call.message.chat.id, 'Вот меню на сегодня:'
-                                               'Салат из квашенной капусты с маслом растительным;'
-                                               'Суп картофельный с горохом и гренками;'
-                                               'Биточки, рубленные из птицы;'
-                                               'Каша гречневая рассыпчатая;'
-                                               'Сок фруктовый;'
-                                               'Фрукты свежие;'
-                                               'Батон или хлеб')
+        bot.send_message(call.message.chat.id, 'Вот меню на сегодня:                                      '
+                                               '                                 '
+                                               '○Салат из квашенной капусты с маслом растительным;       '
+                                               '                                                                  '
+                                               '○Суп картофельный с горохом и гренками;                         '
+                                               '○Биточки, рубленные из птицы;                                          '
+                                               '○Каша гречневая рассыпчатая;                                           '
+                                               '○Сок фруктовый;                                                        '
+                                               '○Фрукты свежие;                                                        '
+                                               '○Батон или хлеб')
         bot.send_message(call.message.chat.id, 'Будешь сегодня кушать?', reply_markup=gen_marcup())
     elif call.data == "back":
         get_restart(call.message)
