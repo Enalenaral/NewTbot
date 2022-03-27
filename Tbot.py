@@ -28,20 +28,7 @@ cursor.execute("DELETE FROM progect")
 @bot.message_handler(commands=['start'])
 def start(message):
     bot.send_message(message.chat.id, 'Привет!')
-    bot.send_message(message.from_user.id, "Как тебя зовут?")
-    bot.register_next_step_handler(message, get_name)
-
-
-def get_name(message):
-    global name
-    name = message.text
-    bot.send_message(message.from_user.id, 'Какая у тебя фамилия?')
-    bot.register_next_step_handler(message, get_surname)
-
-
-def get_surname(message):
-    global surname
-    surname = message.text
+    bot.send_message(message.from_user.id, "Как тебя зовут?(ФИО)")
     bot.send_message(message.from_user.id, 'С какого ты класса?')
     bot.register_next_step_handler(message, get_grade)
 
@@ -49,7 +36,7 @@ def get_surname(message):
 def get_grade(message):
     global grade
     grade = message.text
-    question = 'Ты с ' + str(grade) + ' класса, тебя зовут ' + name + ' ' + surname + '?'
+    question = str(grade)
     bot.send_message(message.from_user.id, text=question, reply_markup=gen_marcup_for_approve_name(message))
 
 
@@ -76,7 +63,6 @@ def get_day():
     month = now.strftime("%m")
     day = now.strftime("%d")
     time = now.strftime("%H:%M:%S")
-    day = year + month + day + time
     day = year + month + day + time
 
 
@@ -106,7 +92,6 @@ def callback_worker(call):
 
     if call.data == "yes_will_eat":
         bot.answer_callback_query(call.id, "Вот твой QR-код")
-        users = surname + " " + name + "/" + grade + "/" + day + "/" + "2334"
         users = surname + " " + name + "/" + grade + "/" + day + "/" + get_number()
         img = qrcode.make(users)
         img.save('qr_code.png')
@@ -131,14 +116,16 @@ def callback_worker(call):
 
     elif call.data == 'yes_swap_name':
         bot.answer_callback_query(call.id, "Хорошо, пойдем дальше")
-        bot.send_message(call.message.chat.id, 'Вот меню на сегодня:'
-                                               'Салат из квашенной капусты с маслом растительным;'
-                                               'Суп картофельный с горохом и гренками;'
-                                               'Биточки, рубленные из птицы;'
-                                               'Каша гречневая рассыпчатая;'
-                                               'Сок фруктовый;'
-                                               'Фрукты свежие;'
-                                               'Батон или хлеб')
+        bot.send_message(call.message.chat.id, 'Вот меню на сегодня:                                      '
+                                               '                                 '
+                                               '○Салат из квашенной капусты с маслом растительным;       '
+                                               '                                                                  '
+                                               '○Суп картофельный с горохом и гренками;                         '
+                                               '○Биточки, рубленные из птицы;                                          '
+                                               '○Каша гречневая рассыпчатая;                                           '
+                                               '○Сок фруктовый;                                                        '
+                                               '○Фрукты свежие;                                                        '
+                                               '○Батон или хлеб')
         bot.send_message(call.message.chat.id, 'Будешь сегодня кушать?', reply_markup=gen_marcup())
 
 
@@ -196,19 +183,4 @@ def main():
     bot.polling()
 
 
-# number = random.randrange(1000, 5000))
-
-
-#
-# @bot.message_handler(commands=['switch'])
-# def switch(message):
-#     markup = types.InlineKeyboardMarkup()
-#     switch_button = types.InlineKeyboardButton(text='Try', switch_inline_query="Telegram")
-#     markup.add(switch_button)
-#     bot.send_message(message.chat.id, "Выбрать чат", reply_markup = markup)
-#
-# @bot.message_handler(content_types=["text"])
-# def handle_text(message):
-#     bot.send_message(message.chat.id, 'Вы написали: ' + message.text)
-#
 main()
