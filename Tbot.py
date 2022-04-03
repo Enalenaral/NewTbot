@@ -1,9 +1,11 @@
 import telebot
+from cursor import cursor
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import qrcode
 import random
 import datetime
 import sqlite3
+import threading
 
 Token = '5209932574:AAFJpNe9bt1fhMma-jwGNP5YSoGJqWjcrh8'
 bot = telebot.TeleBot(Token)
@@ -15,14 +17,22 @@ second_name = ""
 grade_level = ""
 patronymic = ""
 
-connection = sqlite3.connect('progect.db')
-cursor = connection.cursor()
-cursor.execute('''CREATE TABLE IF NOT EXISTS progect 
+
+def c():
+    connection = sqlite3.connect('project.db')
+    cursor1 = connection.cursor()
+    cursor1.execute('''CREATE TABLE IF NOT EXISTS project 
               (Surname TEXT, Name TEXT, Class INT, id INT)''')
-cursor.execute("DELETE FROM progect")
 
 
-# print(cursor.execute("SELECT * FROM progect").fetchall())
+t = threading.Thread(target=c)
+t.start()
+
+
+# cursor.execute("DELETE FROM project")
+
+
+# print(cursor.execute("SELECT * FROM project").fetchall())
 
 
 @bot.message_handler(commands=['start'])
@@ -77,6 +87,10 @@ def callback_worker(call):
     if call.data == "cb_no":
         bot.send_message(call.message.chat.id, "Изменить свои данные", reply_markup=gen_marcup_for_change_data())
     elif call.data == "cb_yes":
+        info = grade.split(' ')
+        u = cursor.execute("INSERT INTO project VALUES ('" + info[0] + "','" + info[1] + "','" + info[3] + "')")
+        threading.Thread(target=u)
+        u.start()
         bot.send_message(call.message.chat.id, 'Запомню : )')
         bot.send_message(call.message.chat.id, 'Вот меню на сегодня:                                      '
                                                '                                 '
