@@ -89,10 +89,12 @@ def callback_worker(call):
         bot.edit_message_text(chat_id=call.message.chat.id,
                               message_id=call.message.message_id, text="Принято!")
     elif call.data == "cb_yes":
-        # info = grade.split(' ')
-        # u = cursor.execute("INSERT INTO project VALUES ('" + info[0] + "','" + info[1] + "','" + info[3] + "')")
-        # threading.Thread(target=u)
-        # u.start()
+        info = grade.split(' ')
+        print(info)
+        u = cursor.execute("INSERT INTO project VALUES ('" + info[0] + "','" + info[1] + "','" + info[3] + "')")
+
+        g = threading.Thread(target=u)
+        g.start()
         bot.send_message(call.message.chat.id, 'Запомню : )')
         bot.send_message(call.message.chat.id, 'Вот меню на сегодня:                                      '
                                                '                                 '
@@ -109,6 +111,8 @@ def callback_worker(call):
                               message_id=call.message.message_id, text=":)")
 
     if call.data == "yes_will_eat":
+        bot.edit_message_text(chat_id=call.message.chat.id,
+                              message_id=call.message.message_id, text=":)")
         bot.answer_callback_query(call.id, "Вот твой QR-код")
         users = surname + " " + name + "/" + grade + "/" + day + "/" + get_number()
         img = qrcode.make(users)
@@ -131,11 +135,13 @@ def callback_worker(call):
                                                '○Фрукты свежие;                                                        '
                                                '○Батон или хлеб')
         bot.send_message(call.message.chat.id, 'Будешь сегодня кушать?', reply_markup=gen_marcup())
+        bot.edit_message_text(chat_id=call.message.chat.id,
+                              message_id=call.message.message_id, text=":)")
+
     elif call.data == "back":
         get_restart(call.message)
         bot.edit_message_text(chat_id=call.message.chat.id,
                               message_id=call.message.message_id, text="Принято!")
-
 
     elif call.data == 'yes_swap_name':
         bot.answer_callback_query(call.id, "Хорошо, пойдем дальше")
@@ -150,6 +156,8 @@ def callback_worker(call):
                                                '○Фрукты свежие;                                                        '
                                                '○Батон или хлеб')
         bot.send_message(call.message.chat.id, 'Будешь сегодня кушать?', reply_markup=gen_marcup())
+        bot.edit_message_text(chat_id=call.message.chat.id,
+                              message_id=call.message.message_id, text=":)")
 
 
 def get_restart(message):
