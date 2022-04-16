@@ -21,18 +21,18 @@ patronymic = ""
 def c():
     connection = sqlite3.connect('project.db')
     cursor1 = connection.cursor()
-    cursor1.execute('''CREATE TABLE IF NOT EXISTS project 
-              (Surname TEXT, Name TEXT, Class INT, id INT)''')
+    cursor1.execute('''CREATE TABLE IF NOT EXISTS database 
+              (Surname TEXT, Name TEXT, Middle name TEXT, class INT)''')
 
 
 t = threading.Thread(target=c)
 t.start()
 
 
-# cursor.execute("DELETE FROM project")
+# cursor.execute("DELETE FROM database")
 
 
-# print(cursor.execute("SELECT * FROM project").fetchall())
+# print(cursor.execute("SELECT * FROM database").fetchall())
 
 
 @bot.message_handler(commands=['start'])
@@ -91,7 +91,7 @@ def callback_worker(call):
     elif call.data == "cb_yes":
         info = grade.split(' ')
         print(info)
-        u = cursor.execute("INSERT INTO project VALUES ('" + info[0] + "','" + info[1] + "','" + info[3] + "')")
+        u = cursor.execute("INSERT INTO database VALUES ('" + info[0] + "','" + info[1] + "','" + info[3] + "')")
 
         g = threading.Thread(target=u)
         g.start()
