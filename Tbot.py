@@ -25,8 +25,7 @@ def c():
               (Surname TEXT, Name TEXT, Middle name TEXT, class INT)''')
 
 
-t = threading.Thread(target=c)
-t.start()
+c()
 
 
 # cursor.execute("DELETE FROM database")
